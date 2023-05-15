@@ -49,7 +49,7 @@ router.post('/addblog', fetchuser, [
 router.get('/getblogs', async (req, res) => {
     try {
         let page = Number(req.query.page) || 1
-        let limit = Number(req.query.limit) || 3
+        let limit = Number(req.query.limit) || 4
         let skip = (page - 1) * limit
 
         const allBlogs = await Blog.find()
