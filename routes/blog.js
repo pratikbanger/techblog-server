@@ -32,7 +32,7 @@ router.post('/addblog', fetchuser, [
         })
 
         const savedBlog = await newBlog.save();
-        
+
         let success = true
         let message = "Blog created successfully, Redirecting to Home Page!"
         res.json({ success, message });
@@ -48,12 +48,17 @@ router.post('/addblog', fetchuser, [
 // ROUTE 2: Fetch all blog using: GET "/api/blog/getblogs".
 router.get('/getblogs', async (req, res) => {
     try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 3
+        let skip = (page - 1) * limit
 
         const allBlogs = await Blog.find()
             .populate('user', ['username'])
             .sort({ createdAt: -1 })
-            .limit(20);
-        res.json(allBlogs)
+            .limit(limit)
+            .skip(skip);
+        res.json({ totalResults: allBlogs.length, allBlogs })
+
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error!")
@@ -63,10 +68,17 @@ router.get('/getblogs', async (req, res) => {
 // ROUTE 3: Fetch users blogs only using: GET "/api/blog/myblogs".
 router.get('/myblogs', fetchuser, async (req, res) => {
     try {
+        let page = Number(req.query.page) || 1
+        let limit = Number(req.query.limit) || 3
+        let skip = (page - 1) * limit
+
         const myBlogs = await Blog.find({ user: req.user.id })
             .populate('user', ['username', 'isAdmin'])
-            .sort({ createdAt: -1 });
-        res.json(myBlogs)
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(skip);
+
+        res.json({ totalResults: myBlogs.length, myBlogs })
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error!")
