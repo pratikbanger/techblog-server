@@ -52,13 +52,15 @@ router.get('/getblogs', async (req, res) => {
         let limit = Number(req.query.limit) || 4
         let skip = (page - 1) * limit
 
+        const Results = await Blog.find()
+
         const allBlogs = await Blog.find()
             .populate('user', ['username'])
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip(skip)
             .exec()
-        res.json({ totalResults: allBlogs.length, allBlogs })
+        res.json({ totalResults: Results.length, allBlogs })
 
     } catch (error) {
         console.error(error.message);
