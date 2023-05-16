@@ -55,7 +55,9 @@ router.get('/getblogs', async (req, res) => {
         const allBlogs = await Blog.find()
             .populate('user', ['username'])
             .sort({ createdAt: -1 })
-            .skip(skip);
+            .limit(limit * 1)
+            .skip(skip)
+            .exec()
         res.json({ totalResults: allBlogs.length, allBlogs })
 
     } catch (error) {
