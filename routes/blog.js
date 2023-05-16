@@ -72,16 +72,18 @@ router.get('/getblogs', async (req, res) => {
 router.get('/myblogs', fetchuser, async (req, res) => {
     try {
         let page = Number(req.query.page) || 1
-        let limit = Number(req.query.limit) || 3
+        let limit = Number(req.query.limit) || 4
         let skip = (page - 1) * limit
 
-        const myBlogs = await Blog.find({ user: req.user.id })
-            .populate('user', ['username', 'isAdmin'])
-            .sort({ createdAt: -1 })
-            .limit(limit)
-            .skip(skip);
+        const Results = await Blog.find({ user: req.user.id })
 
-        res.json({ totalResults: myBlogs.length, myBlogs })
+        const myBlogs = await Blog.find({ user: req.user.id })
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip(skip)
+            .exec()
+        res.json({ totalResults: Results.length, myBlogs })
+
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error!")
